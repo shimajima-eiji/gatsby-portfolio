@@ -1,10 +1,23 @@
 module.exports = {
   siteMetadata: {
-    title: 'Gatsby + Netlify CMS Starter',
+    title: 'のむらやごろうがGatsbyJSでAMP to PWAをめざすブログ',
     description:
-      'This repo contains an example business website that is built with Gatsby, and Netlify CMS.It follows the JAMstack architecture by using Git as a single source of truth, and Netlify for continuous deployment, and CDN distribution.',
+      'のむらやごろうがGatsbyJSでAMP to PWAをめざすブログ',
   },
   plugins: [
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `のむらやごろうがGatsbyJSでAMP to PWAをめざすブログ`,
+        short_name: `Gatsby`,
+        start_url: `/`,
+        background_color: `#6b37bf`,
+        theme_color: `#6b37bf`,
+        display: `standalone`,
+        icon: `src/img/icon.svg`,
+      },
+    },
+    `gatsby-plugin-offline`,
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-sass',
     {
@@ -69,7 +82,7 @@ module.exports = {
       resolve: 'gatsby-plugin-purgecss', // purges all unused/unreferenced css rules
       options: {
         develop: true, // Activates purging in npm run develop
-        purgeOnly: ['/all.sass'], // applies purging only on the bulma css file
+        purgeOnly: [ '/all.sass' ], // applies purging only on the bulma css file
       },
     }, // must be after other CSS plugins
     'gatsby-plugin-netlify', // make sure to keep it last in the array
