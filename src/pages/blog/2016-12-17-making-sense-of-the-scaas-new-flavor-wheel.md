@@ -1,33 +1,93 @@
 ---
 templateKey: blog-post
-title: Making sense of the SCAA’s new Flavor Wheel
-date: 2016-12-17T15:04:10.000Z
+title: Jekyll+GitHubPagesからGatsby+Netlify+HeadlessCMSブログに移行します！
+date: 2019-11-26T07:04:10.000Z
+description: >-
+  Pagesを使っていましたが、記事一つ追加するにもビルドが遅すぎたので、今後はGatsbyJS+Netlify+NetlifyCMSに移行したブログを活用していきます。
 featuredpost: false
 featuredimage: /img/flavor_wheel.jpg
-description: The Coffee Taster’s Flavor Wheel, the official resource used by coffee tasters, has been revised for the first time this year.
 tags:
-  - flavor
-  - tasting
+  - tech
 ---
-![flavor wheel](/img/flavor_wheel.jpg)
+移行しました、と言わないのは今の段階で環境を作ったばかりだからです。
+とりあえず先行で連絡まで。
 
-The SCAA updated the wheel to reflect the finer nuances needed to describe flavors more precisely. The new descriptions are more detailed and hence allow cuppers to distinguish between more flavors.
+後で読み返す時に、またこれからGatsbyJSを使って静的サイトジェネレーターによるブログやサイトを作りたい人向けに、Jekyllからの移行手順も載せておきます。
 
-While this is going to be a big change for professional coffee tasters, it means a lot to you as a consumer as well. We’ll explain how the wheel came to be, how pros use it and what the flavors actually mean.
+## 環境構築
+[NetlifyCMSの公式ページ](https://www.netlifycms.org/)でGet Startedとやると、ウィザードっぽいものが起動して設定だけで環境ができます。
+この時に適用されるスターターがNetlifyCMSだという点だけ認識しておけば後で対応が楽になります。
 
-## What the updates mean to you
+forkしたリポジトリはローカルにcloneして確認できます。
+**思わずnpm upgradeしたくなりますが、バージョンの互換性がないため実行に失敗します。**
+他のサイト等を参考にする場合、npm installで入ってくるパッケージのバージョンには注意してください。
 
-The Specialty Coffee Association of America (SCAA), founded in 1982, is a non-profit trade organization for the specialty coffee industry. With members located in more than 40 countries, SCAA represents every segment of the specialty coffee industry, including:
+## PWA化
+```
+npm install --save gatsby-plugin-manifest
+npm install --save gatsby-plugin-offline
+```
+でpackage.jsonを更新して、
+gatsby-config.jsのplugins部分に以下を追記します。
+```
+  plugins: [
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `サイト名`,
+        short_name: `スマホの表示`,
+        start_url: `/`,
+        background_color: `#6b37bf`,
+        theme_color: `#6b37bf`,
+        display: `standalone`,
+        icon: `src/img/logo.svg`,
+      },
+    },
+    `gatsby-plugin-offline`
+  }
+```
+NetlifyCMSのスターターを使っている場合、別のプラグインも最初から入っているので、既に導入済みかもしれません。
+執筆時点では入ってないので、手動で追加しました。
 
-* producers
-* roasters
-* importers/exporters
-* retailers
-* manufacturers
-* baristas
+その後、通常の手順でサーバーを起動します。
 
-For over 30 years, SCAA has been dedicated to creating a vibrant specialty coffee community by recognizing, developing and promoting specialty coffee. SCAA sets and maintains quality standards for the industry, conducts market research, and provides education, training, resources, and business services for its members.
+### 補足：実行コマンド
+多くのサイトではyarnコマンドですが、私はWindows（Sub system for Linux）なので、`gatsby develop`で実行しました。
 
-Coffee cupping, or coffee tasting, is the practice of observing the tastes and aromas of brewed coffee. It is a professional practice but can be done informally by anyone or by professionals known as "Q Graders". A standard coffee cupping procedure involves deeply sniffing the coffee, then loudly slurping the coffee so it spreads to the back of the tongue.
+なお、WSLだとaptなりyumで入れられるnpm自体のバージョンが古すぎるので、nodebrewからnodejsを入れるようにしましょう。
 
-The coffee taster attempts to measure aspects of the coffee's taste, specifically the body (the texture or mouthfeel, such as oiliness), sweetness, acidity (a sharp and tangy feeling, like when biting into an orange), flavour (the characters in the cup), and aftertaste. Since coffee beans embody telltale flavours from the region where they were grown, cuppers may attempt to identify the coffee's origin.
+```
+# curlぐらい使えると思うけど念のため
+apt update
+apt upgrade
+apt install curl
+
+# nodebrewを入れてnodejsをインストール
+curl -L git.io/nodebrew | perl - setup
+echo "export PATH=$HOME/.nodebrew/current/bin:$PATH" >>~/.bashrc
+source ~/.bashrc
+
+nodebrew install latest
+nodebrew use latest
+npm --version
+```
+
+## 動作確認
+- http://localhost:8000/
+- http://localhost:8000/___graphql
+- http://localhost:8000/admin/
+に接続できれば問題ないです。
+
+主に使うのは上と下ぐらいで、真ん中のGraphQLは何か異常が起こった時ぐらいでしょうか。
+エラーメッセージが出てくる場合、大体は設定周りがおかしいのでログを読んで一つずつ対応していきましょう。
+
+## よくある勘違い
+Jekyll+GitHubPagesから移行しましたが、ソースコードはGitHub上に残ります。
+残るという表現は適切ではなくて、GitHub Pagesに上げたものをNetlifyにデプロイするので順番が逆です。
+
+## 注釈記法が使えない？
+この辺りは拡張機能で解決できそうですが、現状だと注釈記法が使えない事がわかっています。
+jekyll時代だとフル活用していたので、これを対応する必要があります。
+
+## どう考えても初心者向けではない
+GitHub Pagesを使っていた時は直感的だったんですが、このやり方は環境構築から手間なので、何か考えないとダメですね。
